@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Exam Command Center</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">EC</div>
+        <div>
+          <h1>Exam Center</h1>
+          <p>Form 1 study system</p>
+        </div>
+      </div>
+
+      <nav class="nav" aria-label="Main navigation">
+        <button class="nav-item active" data-view="dashboard" type="button">Dashboard</button>
+        <button class="nav-item" data-view="planner" type="button">Planner</button>
+        <button class="nav-item" data-view="subjects" type="button">Subjects</button>
+        <button class="nav-item" data-view="chapters" type="button">Chapters</button>
+        <button class="nav-item" data-view="reviews" type="button">Reviews</button>
+        <button class="nav-item" data-view="mistakes" type="button">Mistakes</button>
+        <button class="nav-item" data-view="flashcards" type="button">Flashcards</button>
+        <button class="nav-item" data-view="analytics" type="button">Analytics</button>
+        <button class="nav-item" data-view="settings" type="button">Settings</button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <p id="streakSummary">0 day streak</p>
+        <button class="ghost-button" id="exportDataBtn" type="button">Export data</button>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow" id="todayLabel">Today</p>
+          <h2 id="viewTitle">Dashboard</h2>
+        </div>
+        <div class="topbar-actions">
+          <button class="secondary-button" id="generateTodayBtn" type="button">Generate today</button>
+          <button class="primary-button" data-open-modal="taskModal" type="button">Add session</button>
+        </div>
+      </header>
+
+      <section class="view active" id="dashboardView">
+        <div class="dashboard-grid">
+          <section class="command-panel">
+            <div class="section-heading">
+              <div>
+                <p class="eyebrow">Right now</p>
+                <h3>Today&apos;s study plan</h3>
+              </div>
+              <span class="phase-pill" id="phasePill">Learning Phase</span>
+            </div>
+            <div id="nextTaskCard" class="next-task"></div>
+            <div class="focus-grid">
+              <article class="focus-box">
+                <p class="eyebrow">New thing</p>
+                <div id="newLearningPrompt"></div>
+              </article>
+              <article class="focus-box">
+                <p class="eyebrow">Review before forgetting</p>
+                <div id="reviewPrompt"></div>
+              </article>
+            </div>
+            <div id="todayTaskList" class="task-list"></div>
+          </section>
+
+          <section class="metrics-grid">
+            <article class="metric">
+              <span>Completed</span>
+              <strong id="completedMetric">0</strong>
+              <p>tasks today</p>
+            </article>
+            <article class="metric">
+              <span>Remaining</span>
+              <strong id="remainingMetric">0</strong>
+              <p>tasks today</p>
+            </article>
+            <article class="metric">
+              <span>Exam Countdown</span>
+              <strong id="countdownMetric">--</strong>
+              <p id="examDateText">Set exam date</p>
+            </article>
+            <article class="metric">
+              <span>Weekly Progress</span>
+              <strong id="weeklyMetric">0%</strong>
+              <p>sessions completed</p>
+            </article>
+          </section>
+
+          <section class="calm-panel">
+            <div class="section-heading">
+              <div>
+                <p class="eyebrow">Momentum</p>
+                <h3>Consistency</h3>
+              </div>
+            </div>
+            <div class="streak-box">
+              <strong id="streakMetric">0</strong>
+              <span>day streak</span>
+            </div>
+            <p id="motivationMessage" class="motivation"></p>
+            <p id="timelineNote" class="small-meta"></p>
+            <div class="mini-week" id="miniWeek"></div>
+          </section>
+
+          <section class="calm-panel">
+            <div class="section-heading">
+              <div>
+                <p class="eyebrow">Memory</p>
+                <h3>Due reviews</h3>
+              </div>
+              <button class="small-button" data-view-jump="reviews" type="button">Open</button>
+            </div>
+            <div id="dueReviewList" class="compact-list"></div>
+          </section>
+        </div>
+      </section>
+
+      <section class="view" id="plannerView">
+        <div class="toolbar">
+          <div class="segmented" role="tablist" aria-label="Planner range">
+            <button class="active" data-plan-mode="today" type="button">Today</button>
+            <button data-plan-mode="week" type="button">Week</button>
+          </div>
+          <button class="secondary-button" id="generateWeekBtn" type="button">Generate week</button>
+        </div>
+        <div id="plannerContent"></div>
+      </section>
+
+      <section class="view" id="subjectsView">
+        <div class="toolbar">
+          <button class="primary-button" data-open-modal="subjectModal" type="button">Add subject</button>
+        </div>
+        <div id="subjectGrid" class="subject-grid"></div>
+      </section>
+
+      <section class="view" id="chaptersView">
+        <div class="toolbar">
+          <select id="chapterSubjectFilter" aria-label="Filter chapters by subject"></select>
+          <button class="primary-button" data-open-modal="chapterModal" type="button">Add chapter</button>
+        </div>
+        <div id="chapterList" class="chapter-list"></div>
+      </section>
+
+      <section class="view" id="reviewsView">
+        <div class="toolbar">
+          <button class="secondary-button" id="scheduleDueReviewsBtn" type="button">Add due reviews to today</button>
+        </div>
+        <div id="reviewBoard" class="review-board"></div>
+      </section>
+
+      <section class="view" id="mistakesView">
+        <div class="toolbar">
+          <button class="primary-button" data-open-modal="mistakeModal" type="button">Add mistake</button>
+        </div>
+        <div id="mistakeList" class="mistake-list"></div>
+      </section>
+
+      <section class="view" id="flashcardsView">
+        <div class="toolbar">
+          <button class="primary-button" data-open-modal="flashcardModal" type="button">Add flashcard</button>
+        </div>
+        <div class="flashcard-layout">
+          <section class="flashcard-review" id="flashcardReview"></section>
+          <section class="flashcard-bank">
+            <h3>Card bank</h3>
+            <div id="flashcardList" class="compact-list"></div>
+          </section>
+        </div>
+      </section>
+
+      <section class="view" id="analyticsView">
+        <div class="analytics-grid">
+          <section class="calm-panel">
+            <h3>Study hours</h3>
+            <div class="big-number" id="totalHoursMetric">0.0</div>
+            <p>Total recorded hours</p>
+          </section>
+          <section class="calm-panel">
+            <h3>Strongest subjects</h3>
+            <div id="strongSubjects" class="compact-list"></div>
+          </section>
+          <section class="calm-panel">
+            <h3>Weakest subjects</h3>
+            <div id="weakSubjects" class="compact-list"></div>
+          </section>
+          <section class="calm-panel chart-panel">
+            <h3>Weekly consistency</h3>
+            <div id="weeklyChart" class="bar-chart"></div>
+          </section>
+          <section class="calm-panel chart-panel wide">
+            <h3>Subject progress</h3>
+            <div id="progressChart" class="progress-chart"></div>
+          </section>
+        </div>
+      </section>
+
+      <section class="view" id="settingsView">
+        <div class="settings-grid">
+          <section class="calm-panel">
+            <h3>Exam settings</h3>
+            <form id="settingsForm" class="form-grid">
+              <label>
+                Exam name
+                <input id="examNameInput" type="text" />
+              </label>
+              <label>
+                Exam date
+                <input id="examDateInput" type="date" />
+              </label>
+              <label>
+                Daily session target
+                <input id="dailyTargetInput" min="3" max="5" type="number" />
+              </label>
+              <button class="primary-button" type="submit">Save settings</button>
+            </form>
+          </section>
+          <section class="calm-panel">
+            <h3>Calendar options</h3>
+            <p class="muted">Direct editing depends on your calendar app. This offline version can export an ICS calendar file with study sessions and review dates.</p>
+            <button class="secondary-button" id="downloadIcsBtn" type="button">Download calendar file</button>
+          </section>
+          <section class="calm-panel">
+            <h3>Data</h3>
+            <p class="muted">Your study data is saved permanently in this browser using LocalStorage.</p>
+            <div class="row-actions">
+              <button class="secondary-button" id="importDataBtn" type="button">Import data</button>
+              <button class="danger-button" id="resetDataBtn" type="button">Reset app</button>
+            </div>
+            <input id="importDataInput" type="file" accept="application/json" hidden />
+          </section>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <dialog class="modal" id="taskModal">
+    <form method="dialog" class="modal-card" id="taskForm">
+      <header>
+        <h3>Add study session</h3>
+        <button class="icon-button" value="cancel" type="submit">x</button>
+      </header>
+      <div class="form-grid">
+        <label>Subject<select id="taskSubject"></select></label>
+        <label>Chapter<input id="taskChapter" type="text" required /></label>
+        <label>Subtopic<input id="taskSubtopic" type="text" required /></label>
+        <label>Learning objective<input id="taskObjective" type="text" placeholder="What should I understand by the end?" required /></label>
+        <label>Estimated minutes<input id="taskMinutes" type="number" min="10" max="120" value="35" required /></label>
+        <label>Priority<select id="taskPriority"><option>High</option><option selected>Medium</option><option>Low</option></select></label>
+        <label>Date<input id="taskDate" type="date" required /></label>
+      </div>
+      <footer><button class="primary-button" value="default" type="submit">Save session</button></footer>
+    </form>
+  </dialog>
+
+  <dialog class="modal" id="subjectModal">
+    <form method="dialog" class="modal-card" id="subjectForm">
+      <header>
+        <h3>Add subject</h3>
+        <button class="icon-button" value="cancel" type="submit">x</button>
+      </header>
+      <div class="form-grid">
+        <label>Name<input id="subjectName" type="text" required /></label>
+        <label>Confidence 1-5<input id="subjectConfidence" type="number" min="1" max="5" value="3" required /></label>
+        <label>Difficulty 1-5<input id="subjectDifficulty" type="number" min="1" max="5" value="3" required /></label>
+        <label>Priority<select id="subjectPriority"><option>High</option><option selected>Medium</option><option>Low</option></select></label>
+      </div>
+      <footer><button class="primary-button" value="default" type="submit">Save subject</button></footer>
+    </form>
+  </dialog>
+
+  <dialog class="modal" id="chapterModal">
+    <form method="dialog" class="modal-card" id="chapterForm">
+      <header>
+        <h3>Add chapter</h3>
+        <button class="icon-button" value="cancel" type="submit">x</button>
+      </header>
+      <div class="form-grid">
+        <label>Subject<select id="chapterSubject"></select></label>
+        <label>Chapter title<input id="chapterTitle" type="text" required /></label>
+        <label>Status<select id="chapterStatus"><option>Not Started</option><option>Learning</option><option>Reviewing</option><option>Mastered</option></select></label>
+        <label>Notes<textarea id="chapterNotes" rows="4"></textarea></label>
+      </div>
+      <footer><button class="primary-button" value="default" type="submit">Save chapter</button></footer>
+    </form>
+  </dialog>
+
+  <dialog class="modal" id="mistakeModal">
+    <form method="dialog" class="modal-card" id="mistakeForm">
+      <header>
+        <h3>Add mistake</h3>
+        <button class="icon-button" value="cancel" type="submit">x</button>
+      </header>
+      <div class="form-grid">
+        <label>Subject<select id="mistakeSubject"></select></label>
+        <label>Chapter<input id="mistakeChapter" type="text" required /></label>
+        <label>Question or topic<input id="mistakeTopic" type="text" required /></label>
+        <label>Mistake<textarea id="mistakeText" rows="3" required></textarea></label>
+        <label>Correct method<textarea id="mistakeCorrect" rows="3" required></textarea></label>
+        <label>Reason<select id="mistakeReason"><option>Careless</option><option>Forgot concept</option><option>Did not understand</option><option>Time pressure</option><option>Calculation error</option></select></label>
+        <label>Future review date<input id="mistakeReviewDate" type="date" required /></label>
+      </div>
+      <footer><button class="primary-button" value="default" type="submit">Save mistake</button></footer>
+    </form>
+  </dialog>
+
+  <dialog class="modal" id="flashcardModal">
+    <form method="dialog" class="modal-card" id="flashcardForm">
+      <header>
+        <h3>Add flashcard</h3>
+        <button class="icon-button" value="cancel" type="submit">x</button>
+      </header>
+      <div class="form-grid">
+        <label>Subject<select id="flashcardSubject"></select></label>
+        <label>Question<textarea id="flashcardQuestion" rows="3" required></textarea></label>
+        <label>Answer<textarea id="flashcardAnswer" rows="3" required></textarea></label>
+        <label>Confidence 1-5<input id="flashcardConfidence" type="number" min="1" max="5" value="3" required /></label>
+      </div>
+      <footer><button class="primary-button" value="default" type="submit">Save card</button></footer>
+    </form>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
